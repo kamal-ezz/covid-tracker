@@ -4,7 +4,9 @@
     <DataTitle :text="title" :dataDate="dataDate" />
     <DataBoxes :stats="stats" />
 
-          <div class="flex items-center justify-center">
+      <div class="flex flex-col items-center justify-center mb-10">
+
+         <div class="flex items-center justify-center w-full">
             <CountrySelect class="mr-6" @get-country="getCountryData" :countries="countries" />
       
           <button 
@@ -14,7 +16,14 @@
             Clear 
           </button>
 
-         </div>
+          </div>
+
+          <button @click="showCharts" class="bg-blue-300 rounded my-10 focus:outline-none hover:bg-blue-400 p-3 ">View Charts</button> 
+
+          <Charts :data="allData" v-if="showchart" />
+
+      </div>
+
 
   </main>
 
@@ -32,7 +41,7 @@
 import DataTitle from '@/components/DataTitle'
 import DataBoxes from '@/components/DataBoxes'
 import CountrySelect from '@/components/CountrySelect'
-
+import Charts from '@/components/Charts'
 
 export default {
   name: 'Home',
@@ -40,15 +49,18 @@ export default {
     DataTitle,
     DataBoxes,
     CountrySelect,
+    Charts
   },
   data() {
     return {
+      allData: {},
       loading: true,
       title: 'Global',
       dataDate: '',
       stats: {},
       countries: [],
-      loadingImage: require('../assets/hourglass.gif')
+      loadingImage: require('../assets/hourglass.gif'),
+      showchart: false
     }
   },
   methods: {
@@ -69,11 +81,16 @@ export default {
       this.title = 'Global'
       this.stats = data.Global
       this.loading = false
+    },
+
+    showCharts(){
+      this.showchart = !this.showchart
     }
   },
   async created() {
     const data = await this.fetchCoivdData()
-    
+
+    this.allData = data
     this.dataDate = data.Date
     this.stats = data.Global
     this.countries = data.Countries
